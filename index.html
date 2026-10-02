@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Horario LITIID15 | Ángel Pool</title>
+
+<style>
+
+/* CONFIGURACIÓN GENERAL */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #05070d;
+    color: white;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* COLORES NEÓN */
+
+:root {
+    --cyan: #00e5ff;
+    --green: #00ff9c;
+    --purple: #a855f7;
+    --background: #0b101a;
+    --border: #1b3445;
+}
+
+/* ENCABEZADO */
+
+header {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: linear-gradient(135deg, #0b1523, #080b12);
+    box-shadow: 0 0 20px #00e5ff18;
+}
+
+.encabezado {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo {
+    width: 85px;
+    height: 85px;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.nombre-universidad {
+    color: var(--cyan);
+    font-size: clamp(17px, 3vw, 27px);
+    font-weight: bold;
+    text-shadow: 0 0 12px #00e5ff70;
+}
+
+.subtitulo {
+    color: #aab5c5;
+    margin-top: 8px;
+    letter-spacing: 3px;
+    font-size: 14px;
+}
+
+/* RELOJ */
+
+.reloj {
+    text-align: center;
+    margin: 30px auto;
+}
+
+#horaActual {
+    font-size: clamp(30px, 7vw, 55px);
+    color: var(--green);
+    text-shadow: 0 0 18px #00ff9c80;
+    font-weight: bold;
+}
+
+#fechaActual {
+    color: #9aa8b9;
+    margin-top: 8px;
+}
+
+/* BOTONES DE LOS DÍAS */
+
+.contenedor-dias {
+    max-width: 1100px;
+    margin: 25px auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.dia-btn {
+    padding: 16px 5px;
+    background: #0d1723;
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: .3s;
+}
+
+.dia-btn:hover {
+    background: var(--cyan);
+    color: #05070d;
+    box-shadow: 0 0 20px var(--cyan);
+    transform: translateY(-3px);
+}
+
+.dia-btn.activo {
+    background: var(--cyan);
+    color: #05070d;
+    box-shadow: 0 0 20px #00e5ff90;
+}
+
+/* CONTENIDO */
+
+.contenedor-horario {
+    max-width: 850px;
+    margin: auto;
+}
+
+.titulo-dia {
+    text-align: center;
+    color: var(--cyan);
+    font-size: 28px;
+    margin-bottom: 22px;
+    text-shadow: 0 0 12px #00e5ff80;
+}
+
+.tarjeta {
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 15px;
+    transition: .3s;
+}
+
+.tarjeta:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px #00e5ff25;
+}
+
+.hora {
+    color: var(--cyan);
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.materia {
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.docente {
+    color: #aab5c5;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.salon {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 12px;
+    color: var(--purple);
+    border: 1px solid var(--purple);
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+/* CLASE ACTUAL */
+
+.en-curso {
+    border: 2px solid var(--green);
+    background: #0c211b;
+    box-shadow: 0 0 22px #00ff9c45;
+}
+
+.en-curso .hora,
+.en-curso .materia {
+    color: var(--green);
+}
+
+.estado {
+    color: var(--green);
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+/* SIGUIENTE CLASE */
+
+.proxima {
+    border: 1px solid var(--purple);
+    box-shadow: 0 0 15px #a855f735;
+}
+
+.proxima .estado {
+    color: #c084fc;
+}
+
+/* RECESOS */
+
+.receso {
+    background: #151923;
+    border: 1px dashed #596579;
+    text-align: center;
+}
+
+.receso .materia {
+    color: #9aa8b9;
+}
+
+.receso .hora {
+    color: #9aa8b9;
+}
+
+/* SIN CLASES */
+
+.libre {
+    text-align: center;
+    padding: 35px;
+    color: #9aa8b9;
+    background: #0b101a;
+    border-radius: 15px;
+    border: 1px solid var(--border);
+}
+
+/* PIE DE PÁGINA */
+
+footer {
+    text-align: center;
+    margin-top: 60px;
+    padding: 25px;
+    color: #64748b;
+    font-size: 13px;
+    letter-spacing: 2px;
+    border-top: 1px solid #172433;
+}
+
+footer span {
+    color: var(--cyan);
+    text-shadow: 0 0 10px #00e5ff70;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 10px;
+    }
+
+    header {
+        padding: 15px;
+    }
+
+    .logo {
+        width: 60px;
+        height: 60px;
+    }
+
+    .subtitulo {
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+
+    .contenedor-dias {
+        gap: 5px;
+    }
+
+    .dia-btn {
+        padding: 13px 2px;
+        font-size: 11px;
+        border-radius: 8px;
+    }
+
+    .tarjeta {
+        padding: 15px;
+    }
+
+    .materia {
+        font-size: 16px;
+    }
+
+    .titulo-dia {
+        font-size: 23px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="encabezado">
+
+        <!-- CAMBIA logo-ut.png POR EL NOMBRE DE TU IMAGEN -->
+
+        <img src="logo-ut.png" alt="Logo UT Cancún" class="logo">
+
+        <div>
+            <div class="nombre-universidad">
+                UNIVERSIDAD TECNOLÓGICA DE CANCÚN
+            </div>
+
+            <div class="subtitulo">
+                HORARIO · LITIID15
+            </div>
+        </div>
+
+    </div>
+
+</header>
+
+<!-- RELOJ EN TIEMPO REAL -->
+
+<div class="reloj">
+    <div id="horaActual">00:00:00</div>
+    <div id="fechaActual"></div>
+</div>
+
+<!-- BOTONES -->
+
+<nav class="contenedor-dias">
+
+    <button class="dia-btn activo" onclick="mostrarDia('lunes', this)">LUNES</button>
+
+    <button class="dia-btn" onclick="mostrarDia('martes', this)">MARTES</button>
+
+    <button class="dia-btn" onclick="mostrarDia('miercoles', this)">MIÉRCOLES</button>
+
+    <button class="dia-btn" onclick="mostrarDia('jueves', this)">JUEVES</button>
+
+    <button class="dia-btn" onclick="mostrarDia('viernes', this)">VIERNES</button>
+
+</nav>
+
+<!-- AQUÍ APARECE EL HORARIO -->
+
+<main class="contenedor-horario">
+
+    <h2 class="titulo-dia" id="tituloDia">LUNES</h2>
+
+    <div id="horario"></div>
+
+</main>
+
+<footer>
+    HORARIO ACADÉMICO · LITIID15
+    <br><br>
+    <span>@Angel Pool</span>
+</footer>
+
+<script>
+
+/* HORARIOS */
+
+const horarios = {
+
+lunes: [
+
+{
+inicio:"07:50",
+fin:"08:40",
+materia:"DESARROLLO HUMANO Y VALORES",
+docente:"Mtra. Elizabeth Petul Chávez",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"08:40",
+fin:"10:00",
+materia:"FUNDAMENTOS DE REDES",
+docente:"Ing. Luis Francisco González García",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"10:00",
+fin:"10:50",
+materia:"RECESO 1",
+tipo:"receso"
+},
+
+{
+inicio:"10:50",
+fin:"12:30",
+materia:"FÍSICA",
+docente:"Mtra. Karla Vanesa Cabrera Castillo",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"12:30",
+fin:"12:50",
+materia:"RECESO 2",
+tipo:"receso"
+},
+
+{
+inicio:"12:50",
+fin:"14:30",
+materia:"FUNDAMENTOS MATEMÁTICOS",
+docente:"Mtro. José Francisco Quintal Vázquez",
+salon:"H122",
+tipo:"clase"
+}
+
+],
+
+martes: [
+
+{
+inicio:"07:00",
+fin:"08:40",
+materia:"FUNDAMENTOS MATEMÁTICOS",
+docente:"Mtro. José Francisco Quintal Vázquez",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"08:40",
+fin:"10:00",
+materia:"DESARROLLO HUMANO Y VALORES",
+docente:"Mtra. Elizabeth Petul Chávez",
+salon:"H208 · Aula virtual",
+tipo:"clase"
+},
+
+{
+inicio:"10:00",
+fin:"10:50",
+materia:"INGLÉS I",
+docente:"Lic. Reyes Brian Moo Salazar",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"10:50",
+fin:"11:40",
+materia:"RECESO 1",
+tipo:"receso"
+},
+
+{
+inicio:"11:40",
+fin:"12:50",
+materia:"FUNDAMENTOS DE PROGRAMACIÓN",
+docente:"Ing. Eduardo Misael Ojeda Marcelino",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"12:50",
+fin:"14:30",
+materia:"COMUNICACIÓN Y HABILIDADES DIGITALES",
+docente:"Mtra. Mayra Guadalupe Fuentes Sosa",
+salon:"H122",
+tipo:"clase"
+}
+
+],
+
+miercoles: [
+
+{
+inicio:"07:00",
+fin:"08:40",
+materia:"FUNDAMENTOS MATEMÁTICOS",
+docente:"Mtro. José Francisco Quintal Vázquez",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"08:40",
+fin:"10:50",
+materia:"FÍSICA",
+docente:"Mtra. Karla Vanesa Cabrera Castillo",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"10:50",
+fin:"12:50",
+materia:"INGLÉS I",
+docente:"Lic. Reyes Brian Moo Salazar",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"12:50",
+fin:"13:40",
+materia:"TUTORÍA GRUPAL",
+docente:"Ing. Luis Francisco González García",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"13:40",
+fin:"14:30",
+materia:"COMUNICACIÓN Y HABILIDADES DIGITALES",
+docente:"Mtra. Mayra Guadalupe Fuentes Sosa",
+salon:"H122",
+tipo:"clase"
+}
+
+],
+
+jueves: [
+
+{
+inicio:"07:00",
+fin:"08:40",
+materia:"COMUNICACIÓN Y HABILIDADES DIGITALES",
+docente:"Mtra. Mayra Guadalupe Fuentes Sosa",
+salon:"J107",
+tipo:"clase"
+},
+
+{
+inicio:"08:40",
+fin:"09:30",
+materia:"DESARROLLO HUMANO Y VALORES",
+docente:"Mtra. Elizabeth Petul Chávez",
+salon:"H122 · Aula virtual",
+tipo:"clase"
+},
+
+{
+inicio:"09:30",
+fin:"10:00",
+materia:"RECESO 1",
+tipo:"receso"
+},
+
+{
+inicio:"10:00",
+fin:"11:40",
+materia:"INGLÉS I",
+docente:"Lic. Reyes Brian Moo Salazar",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"11:40",
+fin:"12:50",
+materia:"FÍSICA",
+docente:"Mtra. Karla Vanesa Cabrera Castillo",
+salon:"H122",
+tipo:"clase"
+}
+
+],
+
+viernes: [
+
+{
+inicio:"07:00",
+fin:"08:40",
+materia:"FUNDAMENTOS MATEMÁTICOS",
+docente:"Mtro. José Francisco Quintal Vázquez",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"08:40",
+fin:"10:00",
+materia:"FUNDAMENTOS DE REDES",
+docente:"Ing. Luis Francisco González García",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"10:00",
+fin:"10:50",
+materia:"RECESO 1",
+tipo:"receso"
+},
+
+{
+inicio:"10:50",
+fin:"12:30",
+materia:"FUNDAMENTOS DE PROGRAMACIÓN",
+docente:"Ing. Eduardo Misael Ojeda Marcelino",
+salon:"H122",
+tipo:"clase"
+},
+
+{
+inicio:"12:50",
+fin:"13:40",
+materia:"DESARROLLO HUMANO Y VALORES",
+docente:"Mtra. Elizabeth Petul Chávez",
+salon:"H122 · Aula virtual",
+tipo:"clase"
+}
+
+]
+
+};
+
+/* DÍA SELECCIONADO */
+
+let diaSeleccionado = "lunes";
+
+/* CONVERTIR HORA A MINUTOS */
+
+function convertirHora(hora) {
+
+    const partes = hora.split(":");
+
+    return Number(partes[0]) * 60 + Number(partes[1]);
+
+}
+
+/* MOSTRAR DÍA */
+
+function mostrarDia(dia, boton) {
+
+    diaSeleccionado = dia;
+
+    document.querySelectorAll(".dia-btn").forEach(btn => {
+        btn.classList.remove("activo");
+    });
+
+    boton.classList.add("activo");
+
+    document.getElementById("tituloDia").textContent =
+        dia.toUpperCase();
+
+    actualizarHorario();
+
+}
+
+/* ACTUALIZAR HORARIO */
+
+function actualizarHorario() {
+
+    const contenedor = document.getElementById("horario");
+
+    const clases = horarios[diaSeleccionado];
+
+    const ahora = new Date();
+
+    const minutosActuales =
+        ahora.getHours() * 60 + ahora.getMinutes();
+
+    let html = "";
+
+    let claseActualEncontrada = false;
+
+    clases.forEach((clase, indice) => {
+
+        const inicio = convertirHora(clase.inicio);
+        const fin = convertirHora(clase.fin);
+
+        let estado = "";
+        let claseCSS = "";
+
+        if (
+            minutosActuales >= inicio &&
+            minutosActuales < fin
+        ) {
+
+            claseActualEncontrada = true;
+
+            if (clase.tipo === "receso") {
+                estado = "☕ ESTÁS EN RECESO";
+            } else {
+                estado = "● CLASE EN CURSO";
+            }
+
+            claseCSS = "en-curso";
+
+        } else if (
+            !claseActualEncontrada &&
+            minutosActuales < inicio &&
+            clase.tipo === "clase"
+        ) {
+
+            estado = "◉ PRÓXIMA CLASE";
+            claseCSS = "proxima";
+
+            claseActualEncontrada = true;
+
+        }
+
+        if (clase.tipo === "receso") {
+
+            html += `
+            <div class="tarjeta receso ${claseCSS}">
+
+                ${estado ? `<div class="estado">${estado}</div>` : ""}
+
+                <div class="hora">
+                    ${clase.inicio} — ${clase.fin}
+                </div>
+
+                <div class="materia">
+                    ☕ ${clase.materia}
+                </div>
+
+            </div>`;
+
+        } else {
+
+            html += `
+            <div class="tarjeta ${claseCSS}">
+
+                ${estado ? `<div class="estado">${estado}</div>` : ""}
+
+                <div class="hora">
+                    ${clase.inicio} — ${clase.fin}
+                </div>
+
+                <div class="materia">
+                    ${clase.materia}
+                </div>
+
+                <div class="docente">
+                    👨‍🏫 ${clase.docente}
+                </div>
+
+                <div class="salon">
+                    SALÓN: ${clase.salon}
+                </div>
+
+            </div>`;
+
+        }
+
+    });
+
+    contenedor.innerHTML = html;
+
+}
+
+/* RELOJ DE CANCÚN */
+
+function actualizarReloj() {
+
+    const ahora = new Date();
+
+    const hora = new Intl.DateTimeFormat("es-MX", {
+        timeZone: "America/Cancun",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+    }).format(ahora);
+
+    const fecha = new Intl.DateTimeFormat("es-MX", {
+        timeZone: "America/Cancun",
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    }).format(ahora);
+
+    document.getElementById("horaActual").textContent = hora;
+
+    document.getElementById("fechaActual").textContent =
+        fecha.charAt(0).toUpperCase() + fecha.slice(1);
+
+    actualizarHorario();
+
+}
+
+/* INICIO */
+
+actualizarReloj();
+
+setInterval(actualizarReloj, 1000);
+
+</script>
+
+</body>
+</html>
